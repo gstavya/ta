@@ -10,13 +10,16 @@ import streamlit as st
 import os
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+import webbrowser
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
+
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/spreadsheets']
 
 def authenticate_user():
     creds = None
     if os.path.exists('token.json'):  # If token.json exists, use the stored credentials
-        creds = Credentials.from_authorized_user_file('token.json', ["https://www.googleapis.com/auth/spreadsheets"])
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     
     # If the credentials are not available or are expired, let the user log in
     if not creds or not creds.valid:
@@ -24,12 +27,23 @@ def authenticate_user():
             creds.refresh(Request())  # Refresh expired tokens
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', ["https://www.googleapis.com/auth/spreadsheets"])
-            creds = flow.run_local_server(port=0)  # OAuth flow to get credentials
-        
-        # Save credentials for the next session
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
+                'credentials.json', SCOPES)
+
+            # The following line will generate the URL to authenticate
+            auth_url, _ = flow.authorization_url(prompt='consent')
+            
+            # Print the URL so that the user can visit it in their browser
+            print(f'Please go to this URL to authorize the application: {auth_url}')
+            
+            # Allow the user to input the authorization code
+            auth_code = input('Enter the authorization code here: ')
+
+            # Fetch the token using the auth code
+            creds = flow.fetch_token(authorization_response=auth_url + '&code=' + auth_code)
+            
+            # Save credentials for the next session
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
     
     return creds
 
