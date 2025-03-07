@@ -14,7 +14,7 @@ st.title("📄 TA Grader – Google Sheets Auto-Grader")
 def authenticate_user():
     creds = None
     if os.path.exists('token.json'):  # If token.json exists, use the stored credentials
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        creds = Credentials.from_authorized_user_file('token.json', ["https://www.googleapis.com/auth/spreadsheets"])
     
     # If the credentials are not available or are expired, let the user log in
     if not creds or not creds.valid:
@@ -22,7 +22,7 @@ def authenticate_user():
             creds.refresh(Request())  # Refresh expired tokens
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                'credentials.json', ["https://www.googleapis.com/auth/spreadsheets"])
             creds = flow.run_local_server(port=0)  # OAuth flow to get credentials
         
         # Save credentials for the next session
