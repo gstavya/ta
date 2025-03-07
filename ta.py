@@ -7,6 +7,7 @@ from langchain_community.tools.gmail.utils import get_gmail_credentials
 import re
 import pandas as pd
 import streamlit as st
+import os
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
