@@ -1,0 +1,6 @@
+google-auth==2.20.0
+google-auth-oauthlib==0.7.0
+google-api-python-client==2.80.0
+langchain-community==0.0.1
+pandas==2.0.3
+streamlit==1.19.0
