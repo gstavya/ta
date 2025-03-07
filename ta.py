@@ -25,7 +25,7 @@ def authenticate_user():
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials.json', ["https://www.googleapis.com/auth/spreadsheets"])
-            creds = flow.run_local_server(port=0)  # OAuth flow to get credentials
+            creds = flow.flow.run_console()  # OAuth flow to get credentials
         
         # Save credentials for the next session
         with open('token.json', 'w') as token:
