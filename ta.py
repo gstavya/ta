@@ -8,6 +8,8 @@ import re
 import pandas as pd
 import streamlit as st
 import os
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
