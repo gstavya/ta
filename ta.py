@@ -10,6 +10,26 @@ import streamlit as st
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
+def authenticate_user():
+    creds = None
+    if os.path.exists('token.json'):  # If token.json exists, use the stored credentials
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    
+    # If the credentials are not available or are expired, let the user log in
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())  # Refresh expired tokens
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)  # OAuth flow to get credentials
+        
+        # Save credentials for the next session
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    
+    return creds
+
 # --- Function: Extract Google Sheets ID from Link ---
 def extract_sheet_id(sheet_url):
     match = re.search(r"/d/([a-zA-Z0-9-_]+)", sheet_url)
@@ -28,6 +48,9 @@ if sheet_url:
 def name_in_text(name, text_content):
     pattern = r'\b' + re.escape(name) + r'\b'
     return bool(re.search(pattern, text_content, re.IGNORECASE))
+
+
+authenticate_user()
 
 # --- Load Spreadsheet ---
 if spreadsheet_file and text_file and sheet_url:
