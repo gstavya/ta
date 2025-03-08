@@ -51,14 +51,16 @@ def authenticate_user():
         else:
             # Run the OAuth flow to get the credentials
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
-            # creds = flow.run_local_server(port=0, open_browser=False)
-            creds = flow.run_console()
+                'credentials.json', SCOPES
+            )
+            creds = flow.run_local_server(port=0, open_browser=False)  # Change here
         
         # Save the credentials for the next run as a JSON file
-        creds_data = creds.to_json()
+        creds_data = json.loads(creds.to_json())  # Fix JSON format issue
         with open('token.json', 'w') as token:
             json.dump(creds_data, token)
+    
+    return creds  # Ensure credentials are returned
 
 def main():
     st.title('Google Authentication Example')
