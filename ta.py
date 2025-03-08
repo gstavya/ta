@@ -12,10 +12,6 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import json
 
-# Register the browser for manual URL opening
-webbrowser.register('chrome', None, webbrowser.BackgroundBrowser('/Applications/Google Chrome.app'))
-webbrowser.get('chrome').open_new("http://example.com")
-
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
 # The SCOPES variable defines what level of access you need. Modify as needed based on your requirements.
