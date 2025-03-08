@@ -33,9 +33,6 @@ def name_in_text(name, text_content):
     pattern = r'\b' + re.escape(name) + r'\b'
     return bool(re.search(pattern, text_content, re.IGNORECASE))
 
-
-authenticate_user()
-
 # --- Load Spreadsheet ---
 if spreadsheet_file and text_file and sheet_url:
     df = pd.read_csv(spreadsheet_file)
