@@ -13,6 +13,9 @@ from googleapiclient.discovery import build
 import webbrowser
 import json
 
+import webbrowser
+webbrowser.register('chrome', None, webbrowser.GenericBrowser('/usr/bin/google-chrome'))
+
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
 import os
@@ -49,7 +52,7 @@ def authenticate_user():
             # Run the OAuth flow to get the credentials
             flow = InstalledAppFlow.from_client_secrets_file(
                 'credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=0, open_browser=False)
         
         # Save the credentials for the next run as a JSON file
         creds_data = creds.to_json()
