@@ -61,23 +61,19 @@ def authenticate_user():
         st.error(f"An error occurred: {error}")
         return None
 
-def main():
-    st.title('Google Authentication Example')
-
-    # Button to authenticate the user
-    if st.button('Authenticate with Google'):
-        service = authenticate_user()
-        if service:
-            st.success("Authentication successful!")
-            # Example: List files in Google Drive (can be replaced with your own API call)
-            results = service.files().list(pageSize=10, fields="files(id, name)").execute()
-            files = results.get('files', [])
-            if not files:
-                st.write('No files found.')
-            for file in files:
-                st.write(f"File ID: {file['id']} | Name: {file['name']}")
-        else:
-            st.error("Authentication failed!")
+if st.button('Authenticate with Google'):
+    service = authenticate_user()
+    if service:
+        st.success("Authentication successful!")
+        # Example: List files in Google Drive (can be replaced with your own API call)
+        results = service.files().list(pageSize=10, fields="files(id, name)").execute()
+        files = results.get('files', [])
+        if not files:
+            st.write('No files found.')
+        for file in files:
+            st.write(f"File ID: {file['id']} | Name: {file['name']}")
+    else:
+        st.error("Authentication failed!")
 
 # --- Function: Extract Google Sheets ID from Link ---
 def extract_sheet_id(sheet_url):
