@@ -1,7 +1,7 @@
-google-api-python-client==1.7.2
-google-auth==2.14.1
-google-auth-httplib2==0.0.3
-google-auth-oauthlib==0.4.1
-langchain-community==0.0.31
-pandas==1.3.5
-streamlit==1.12.2
+google-api-python-client
+google-auth
+google-auth-httplib2
+google-auth-oauthlib
+langchain-community
+pandas
+streamlit
