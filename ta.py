@@ -56,18 +56,8 @@ def authenticate_user():
         with open('token.json', 'w') as token:
             json.dump(creds_data, token)
 
-    # Return authenticated Google API service (example with Google Drive)
-    try:
-        service = build('drive', 'v3', credentials=creds)
-        return service
-    except exceptions.HttpError as error:
-        st.error(f"An error occurred: {error}")
-        return None
-
 def main():
     st.title('Google Authentication Example')
-
-    # Button to authenticate the user
     if st.button('Authenticate with Google'):
         service = authenticate_user()
         if service:
