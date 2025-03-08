@@ -14,6 +14,71 @@ import webbrowser
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
+import os
+import pickle
+import streamlit as st
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from google.auth.transport.requests import Request
+from google.auth import exceptions
+
+# The SCOPES variable defines what level of access you need. 
+# Modify as needed based on your requirements.
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+
+def authenticate_user():
+    """Authenticate the user with Google and store the token.json file"""
+    
+    creds = None
+    # The file token.json stores the user's access and refresh tokens.
+    if os.path.exists('token.json'):
+        with open('token.json', 'rb') as token:
+            creds = pickle.load(token)
+
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            try:
+                creds.refresh(Request())
+            except exceptions.GoogleAuthError as error:
+                st.error(f"Error during token refresh: {error}")
+                return None
+        else:
+            # Run the OAuth flow to get the credentials
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'client_secrets.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        
+        # Save the credentials for the next run
+        with open('token.json', 'wb') as token:
+            pickle.dump(creds, token)
+
+    # Return authenticated Google API service (example with Google Drive)
+    try:
+        service = build('drive', 'v3', credentials=creds)
+        return service
+    except exceptions.HttpError as error:
+        st.error(f"An error occurred: {error}")
+        return None
+
+def main():
+    st.title('Google Authentication Example')
+
+    # Button to authenticate the user
+    if st.button('Authenticate with Google'):
+        service = authenticate_user()
+        if service:
+            st.success("Authentication successful!")
+            # Example: List files in Google Drive (can be replaced with your own API call)
+            results = service.files().list(pageSize=10, fields="files(id, name)").execute()
+            files = results.get('files', [])
+            if not files:
+                st.write('No files found.')
+            for file in files:
+                st.write(f"File ID: {file['id']} | Name: {file['name']}")
+        else:
+            st.error("Authentication failed!")
+
 # --- Function: Extract Google Sheets ID from Link ---
 def extract_sheet_id(sheet_url):
     match = re.search(r"/d/([a-zA-Z0-9-_]+)", sheet_url)
