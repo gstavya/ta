@@ -13,8 +13,8 @@ from googleapiclient.discovery import build
 import webbrowser
 import json
 
-# import webbrowser
-# webbrowser.register('chrome', None, webbrowser.GenericBrowser('/usr/bin/google-chrome'))
+webbrowser.register('chrome', None, webbrowser.BackgroundBrowser('/Applications/Google Chrome.app'))
+webbrowser.get('chrome').open_new("http://example.com")
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
