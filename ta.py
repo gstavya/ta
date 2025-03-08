@@ -21,6 +21,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 def get_credentials():
     # OAuth flow to generate the credentials
     flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+    flow.redirect_uri = 'http://localhost:8501/'
     auth_url, _ = flow.authorization_url()
     return flow, auth_url
 
