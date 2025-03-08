@@ -11,6 +11,7 @@ import os
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 import webbrowser
+import json
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
