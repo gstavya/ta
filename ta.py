@@ -48,7 +48,7 @@ def authenticate_user():
         else:
             # Run the OAuth flow to get the credentials
             flow = InstalledAppFlow.from_client_secrets_file(
-                'client_secrets.json', SCOPES)
+                'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         
         # Save the credentials for the next run as a JSON file
