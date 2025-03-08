@@ -72,13 +72,6 @@ def main():
         service = authenticate_user()
         if service:
             st.success("Authentication successful!")
-            # Example: List files in Google Drive (can be replaced with your own API call)
-            results = service.files().list(pageSize=10, fields="files(id, name)").execute()
-            files = results.get('files', [])
-            if not files:
-                st.write('No files found.')
-            for file in files:
-                st.write(f"File ID: {file['id']} | Name: {file['name']}")
         else:
             st.error("Authentication failed!")
 
