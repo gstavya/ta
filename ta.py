@@ -21,8 +21,9 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 def get_credentials():
     # OAuth flow to generate the credentials
     flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-    creds = flow.run_local_server(port=8080)
-    return creds
+    flow.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'  # Desktop clients use this redirect URI
+    auth_url, _ = flow.authorization_url(prompt='consent')
+    return flow, auth_url
 
 # Function to extract the spreadsheet ID from the Google Sheets URL
 def extract_sheet_id(sheet_url):
