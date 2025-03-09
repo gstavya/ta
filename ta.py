@@ -43,25 +43,25 @@ def authenticate_user():
 
     # If the user enters the code, fetch the token
     if auth_code:
-    try:
-        flow.fetch_token(code=auth_code)
-        creds = flow.credentials
-        
-        # Check token details for debugging
-        st.write(f"Access Token: {creds.token}")
-        st.write(f"Refresh Token: {creds.refresh_token}")
-        st.write(f"Token Expiry: {creds.expiry}")
-
-        # If token is expired, try to refresh
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-            st.write(f"Token refreshed: {creds.token}")
-
-        st.success("Authentication successful!")
-        return creds
-    except Exception as e:
-        st.error(f"❌ An error occurred: {e}")  # Print out the error for debugging
-        return None
+        try:
+            flow.fetch_token(code=auth_code)
+            creds = flow.credentials
+            
+            # Check token details for debugging
+            st.write(f"Access Token: {creds.token}")
+            st.write(f"Refresh Token: {creds.refresh_token}")
+            st.write(f"Token Expiry: {creds.expiry}")
+    
+            # If token is expired, try to refresh
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())
+                st.write(f"Token refreshed: {creds.token}")
+    
+            st.success("Authentication successful!")
+            return creds
+        except Exception as e:
+            st.error(f"❌ An error occurred: {e}")  # Print out the error for debugging
+            return None
 
 # Load Spreadsheet and Process Data
 spreadsheet_file = st.file_uploader("📂 Upload Google Sheets (CSV format)", type=["csv"])
