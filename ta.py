@@ -46,6 +46,11 @@ def authenticate_user():
         try:
             flow.fetch_token(code=auth_code)
             creds = flow.credentials
+            
+            # Check if the credentials are expired and refresh if necessary
+            if creds and creds.expired and creds.refresh_token:
+                creds.refresh(Request())  # Refresh the token using the stored refresh token
+
             st.success("Authentication successful!")
             return creds
         except Exception as e:
