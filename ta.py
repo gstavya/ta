@@ -67,7 +67,9 @@ sheet_url = st.text_input("🔗 Enter Google Sheets Link:")
 creds = authenticate_user()
 
 if creds:
-    # User authentication is successful, proceed with the process
+    # Check if creds are still valid
+    if creds.expired and creds.refresh_token:
+        creds.refresh(Request())  # Refresh expired credentials
     if sheet_url:
         spreadsheet_id = extract_sheet_id(sheet_url)
         if not spreadsheet_id:
