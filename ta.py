@@ -43,10 +43,14 @@ def authenticate_user():
 
     # If the user enters the code, fetch the token
     if auth_code:
-        flow.fetch_token(code=auth_code)
-        creds = flow.credentials
-        st.success("Authentication successful!")
-        return creds
+        try:
+            flow.fetch_token(code=auth_code)
+            creds = flow.credentials
+            st.success("Authentication successful!")
+            return creds
+        except Exception as e:
+            st.error(f"❌ An error occurred: {e}")  # Print out the error for debugging
+            return None
     return None
 
 # Load Spreadsheet and Process Data
