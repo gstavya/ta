@@ -14,17 +14,6 @@ import json
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
-# The SCOPES variable defines what level of access you need. Modify as needed based on your requirements.
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-
-# Function to get the Google OAuth credentials (This is to be used when authenticating users)
-def get_credentials():
-    # OAuth flow to generate the credentials
-    flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-    flow.redirect_uri = 'urn:ietf:wg:oauth:2.0:oob'  # Desktop clients use this redirect URI
-    auth_url, _ = flow.authorization_url(prompt='consent')
-    return flow, auth_url
-
 # Function to extract the spreadsheet ID from the Google Sheets URL
 def extract_sheet_id(sheet_url):
     match = re.search(r"/d/([a-zA-Z0-9-_]+)", sheet_url)
