@@ -11,6 +11,32 @@ import os
 
 st.title("📄 TA Grader – Google Sheets Auto-Grader")
 
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "openid",
+    "email"
+]
+
+if st.button("Authenticate with Google"):
+    from google_auth_oauthlib.flow import InstalledAppFlow
+    # Initialize the flow using the client secrets file and your defined scopes
+    flow = InstalledAppFlow.from_client_secrets_file('credentials.json', scopes=SCOPES)
+    
+    # Launch the OAuth flow. You might need to adjust this depending on your deployment:
+    creds = flow.run_local_server(port=0)
+    
+    # Save the credentials to a file (if needed)
+    with open("token.json", "w") as token_file:
+        token_file.write(creds.to_json())
+    
+    # Optionally, extract the user's email from the ID token (if available)
+    user_email = creds.id_token.get("email") if creds.id_token else "Unknown"
+    st.write(f"Authenticated as {user_email}")
+    
+    # Save credentials in session state so they can be used later
+    st.session_state["creds"] = creds
+
+
 # --- Function: Extract Google Sheets ID from Link ---
 def extract_sheet_id(sheet_url):
     match = re.search(r"/d/([a-zA-Z0-9-_]+)", sheet_url)
@@ -61,23 +87,24 @@ if "updated_df" in st.session_state and st.button("🚀 Upload to Google Sheets"
     column_letter = chr(ord('A') + col_index)  # Convert index to column letter
     range_name = f"{column_letter}2:{column_letter}{len(df) + 1}"  # Adjust range dynamically
 
-    credentials = get_gmail_credentials(
-        token_file="token.json",
-        scopes=["https://www.googleapis.com/auth/spreadsheets"],
-        client_secrets_file="credentials.json",
-    )
+    # Retrieve credentials from session state
+    creds = st.session_state.get("creds")
+    if not creds:
+        st.error("Please authenticate first by clicking the 'Authenticate with Google' button.")
+    else:
+        try:
+            from googleapiclient.discovery import build
+            service = build("sheets", "v4", credentials=creds)
+            body = {"values": [[val] for val in update_values]}  # Ensure 2D list format
 
-    try:
-        service = build("sheets", "v4", credentials=credentials)
-        body = {"values": [[val] for val in update_values]}  # Ensure 2D list format
+            service.spreadsheets().values().update(
+                spreadsheetId=spreadsheet_id,
+                range=range_name,
+                valueInputOption="USER_ENTERED",
+                body=body,
+            ).execute()
 
-        service.spreadsheets().values().update(
-            spreadsheetId=spreadsheet_id,
-            range=range_name,
-            valueInputOption="USER_ENTERED",
-            body=body,
-        ).execute()
+            st.success("✅ Successfully uploaded to Google Sheets!")
+        except Exception as error:
+            st.error(f"❌ An error occurred: {error}")
 
-        st.success("✅ Successfully uploaded to Google Sheets!")  # Feedback on success
-    except HttpError as error:
-        st.error(f"❌ An error occurred: {error}")
