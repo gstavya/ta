@@ -17,15 +17,43 @@ SCOPES = [
     "email"
 ]
 
-if st.button("Authenticate with Google"):
-    from google_auth_oauthlib.flow import InstalledAppFlow
-    flow = InstalledAppFlow.from_client_secrets_file('credentials.json', scopes=SCOPES)
-    # Use run_console for environments without a local browser
-    creds = flow.run_console()
-    
-    st.session_state["creds"] = creds
-    user_email = creds.id_token.get("email") if creds.id_token else "Unknown"
-    st.write(f"Authenticated as {user_email}")
+SCOPES = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "openid",
+    "email"
+]
+
+# Step 1: Trigger the OAuth Flow
+if "creds" not in st.session_state:
+    if "auth_url" not in st.session_state:
+        if st.button("Authenticate with Google"):
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', scopes=SCOPES)
+            # Generate the authorization URL
+            auth_url, _ = flow.authorization_url(prompt='consent')
+            # Save the flow and URL in session state
+            st.session_state["flow"] = flow
+            st.session_state["auth_url"] = auth_url
+            st.experimental_rerun()  # Rerun to update the UI
+
+    else:
+        # Step 2: Display the authorization URL and prompt for the code
+        st.write("Please go to the following URL and authorize the application:")
+        st.write(st.session_state["auth_url"])
+        code = st.text_input("Enter the authorization code:")
+        if code:
+            try:
+                st.session_state["flow"].fetch_token(code=code)
+                creds = st.session_state["flow"].credentials
+                st.session_state["creds"] = creds
+                # Optionally, extract and display the user’s email if available
+                user_email = creds.id_token.get("email") if creds.id_token else "Unknown"
+                st.success(f"Authenticated as {user_email}")
+            except Exception as e:
+                st.error(f"Failed to authenticate: {e}")
+
+# Continue with your app logic, e.g., using st.session_state["creds"] for API calls.
+if "creds" in st.session_state:
+    st.write("You are authenticated and ready to use the app!")
 
 
 # --- Function: Extract Google Sheets ID from Link ---
