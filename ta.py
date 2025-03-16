@@ -33,7 +33,6 @@ if "creds" not in st.session_state:
             # Save the flow and URL in session state
             st.session_state["flow"] = flow
             st.session_state["auth_url"] = auth_url
-            st.experimental_rerun()  # Rerun to update the UI
 
     else:
         # Step 2: Display the authorization URL and prompt for the code
