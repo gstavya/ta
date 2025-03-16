@@ -19,22 +19,13 @@ SCOPES = [
 
 if st.button("Authenticate with Google"):
     from google_auth_oauthlib.flow import InstalledAppFlow
-    # Initialize the flow using the client secrets file and your defined scopes
     flow = InstalledAppFlow.from_client_secrets_file('credentials.json', scopes=SCOPES)
+    # Use run_console for environments without a local browser
+    creds = flow.run_console()
     
-    # Launch the OAuth flow. You might need to adjust this depending on your deployment:
-    creds = flow.run_local_server(port=0)
-    
-    # Save the credentials to a file (if needed)
-    with open("token.json", "w") as token_file:
-        token_file.write(creds.to_json())
-    
-    # Optionally, extract the user's email from the ID token (if available)
+    st.session_state["creds"] = creds
     user_email = creds.id_token.get("email") if creds.id_token else "Unknown"
     st.write(f"Authenticated as {user_email}")
-    
-    # Save credentials in session state so they can be used later
-    st.session_state["creds"] = creds
 
 
 # --- Function: Extract Google Sheets ID from Link ---
